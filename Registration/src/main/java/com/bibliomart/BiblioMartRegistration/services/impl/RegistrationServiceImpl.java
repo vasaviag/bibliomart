@@ -2,7 +2,7 @@ package com.bibliomart.BiblioMartRegistration.services.impl;
 
 import com.bibliomart.BiblioMartRegistration.entity.User;
 import com.bibliomart.BiblioMartRegistration.repository.IRegistrationRepository;
-import com.bibliomart.BiblioMartRegistration.services.IRegistrationService11;
+import com.bibliomart.BiblioMartRegistration.services.IRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RegistrationServiceImpl implements IRegistrationService11 {
+public class RegistrationServiceImpl implements IRegistrationService {
     @Autowired
     IRegistrationRepository iRegistrationRepository;
 

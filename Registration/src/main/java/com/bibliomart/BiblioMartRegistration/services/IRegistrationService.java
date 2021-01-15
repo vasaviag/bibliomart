@@ -4,7 +4,7 @@ import com.bibliomart.BiblioMartRegistration.entity.User;
 
 import java.util.List;
 
-public interface IRegistrationService11 {
+public interface IRegistrationService {
     User save(User user);
     User findById(int id);
     void deleteById(int id);

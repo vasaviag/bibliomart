@@ -2,7 +2,7 @@ package com.bibliomart.BiblioMartRegistration.controller;
 
 import com.bibliomart.BiblioMartRegistration.entity.Id;
 import com.bibliomart.BiblioMartRegistration.entity.User;
-import com.bibliomart.BiblioMartRegistration.services.IRegistrationService11;
+import com.bibliomart.BiblioMartRegistration.services.IRegistrationService;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 public class RegistrationController {
     @Autowired
-    IRegistrationService11 iRegistrationService ;
+    IRegistrationService iRegistrationService ;
 
     @PostMapping(value = "/registration")
     User addUser(@RequestBody User user)
