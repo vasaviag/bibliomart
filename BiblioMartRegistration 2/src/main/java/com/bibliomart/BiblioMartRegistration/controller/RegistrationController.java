@@ -3,7 +3,6 @@ package com.bibliomart.BiblioMartRegistration.controller;
 import com.bibliomart.BiblioMartRegistration.entity.Id;
 import com.bibliomart.BiblioMartRegistration.entity.User;
 import com.bibliomart.BiblioMartRegistration.services.IRegistrationService11;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +12,11 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 
-
-import java.net.URL;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class RegistrationController {
@@ -35,36 +36,66 @@ public class RegistrationController {
     }
 
     @GetMapping(value = "/loginHistory/{date}/{userId}")
-    List<String> getTimeStampsForParticularDate(@PathVariable ("date") String date, @PathVariable("userId") int id)
+    List<String> getTimeStampsForParticularDate(@PathVariable ("date") String date, @PathVariable("userId") int id) throws Exception
     {
+        List<String> requiredTimeStamps = new ArrayList<String>();
         User user = new User();
         user = iRegistrationService.findById(id);
-        String s = user.getTimestamps();
-        String arr [] = s.split(",");
-        for (String s1: arr) {
+        String timeStampsStr = user.getTimestamps();
+        String timeStampsArr [] = timeStampsStr.split(",");
+        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
 
+        for (String timeStamp: timeStampsArr)
+        {
+            Date dateToMatch = new SimpleDateFormat("yyyy-MM-dd").parse(timeStamp);
 
+            if(dateToMatch.equals(searchDate))
+            {
+                Date dateAndTimeToStore = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timeStamp);
+                requiredTimeStamps.add(dateAndTimeToStore+"");
+            }
         }
+        return requiredTimeStamps;
     }
 
     @GetMapping(value = "/loginHistory/{userId}")
-    List<String> getTimeStamps(@PathVariable("userId") int id)
+    List<String> getTimeStamps(@PathVariable("userId") int id) throws Exception
     {
-        Date today = new Date();
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(today);
-        cal.add(Calendar.DAY_OF_MONTH, -180);
-        Date today180 = cal.getTime();
+        List<String> requiredTimeStamps = new ArrayList<String>();
+        User user = new User();
+        user = iRegistrationService.findById(id);
+        String timeStampsStr = user.getTimestamps();
+        String timeStampsArr [] = timeStampsStr.split(",");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date currDate = new Date();
 
-
+        for (String timeStamp: timeStampsArr) {
+            Date dateToMatch = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timeStamp);
+            long diff = currDate.getTime() - dateToMatch.getTime();
+            long diffInDays = TimeUnit.MILLISECONDS.toDays(diff);
+            if(diffInDays < 180) {
+                requiredTimeStamps.add(dateToMatch + "");
+            }
+        }
+        return requiredTimeStamps;
     }
 
     @PostMapping(value = "/login")
-    Id loginUser(@RequestBody User user)
+    Id loginUser(@RequestBody User user) throws Exception
     {
         Id id = new Id();
         User user1 = iRegistrationService.findByEmail(user.getEmail());
-        if(user1.getFb() == 1 || user1.getGmail() == 1)
+
+        if(user.getGmail() == 1)
+        {
+            id = loginGoogle(user);
+            if(id.getStatus() == 200)
+            {
+                user1.setGmail(1);
+                user1.setAccessTokenGmail(user.getAccessTokenGmail());
+            }
+        }
+        else if(user.getFb()==1)
         {
             // Verify Access Token
         }
@@ -79,6 +110,23 @@ public class RegistrationController {
                 id.setUserId(-1);
                 id.setStatus(400);
             }
+        }
+        if(id.getStatus() == 200)
+        {
+            Timestamp sqlTimestamp = new Timestamp(System.currentTimeMillis());
+            String timestamps = user1.getTimestamps();
+            if(timestamps == null)
+            {
+                timestamps = sqlTimestamp+"";
+                user1.setTimestamps(timestamps);
+            }
+            else
+            {
+                timestamps = timestamps.concat(",");
+                timestamps = timestamps.concat(sqlTimestamp+"");
+                user.setTimestamps(timestamps);
+            }
+            iRegistrationService.save(user1);
         }
         return id;
     }
@@ -96,40 +144,39 @@ public class RegistrationController {
 //        String appAccessToken = "EAAJyHBh5uiUBAIVsFKGnVljhKZCYpRZAL7Ng9plVUotFF6CwDO5FnkZBrrPVIKq2bkID8xvL1LVF1TUQ8iNXRBkGU0bkR4HlEFNUv5uC6nHM05ARtWJOGipvbsEthZCVAMYenWdDkVkzs1NKIJGzLsO4y2y3ubUlJjCHnn2KZCUGCOFrs32wXBsHDK2G7ltwZD";
 //    }
 
-    @PostMapping(value = "/loginGoogle")
-    User loginGoogle (@RequestBody User user) throws Exception {
+
+    Id loginGoogle (@RequestBody User user) throws Exception {
+
+        Id id = new Id();
+
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 .setAudience(Collections.singletonList("39901288485-drpr7fbip0401d1r62vm3t7rr8i64ruc.apps.googleusercontent.com"))
                 .build();
-
-        System.out.println(user.getAccessTokenGmail());
-
-        // (Receive idTokenString by HTTPS POST)
 
         GoogleIdToken idToken = verifier.verify(user.getAccessTokenGmail());
         if (idToken != null) {
             Payload payload = idToken.getPayload();
 
-            // Print user identifier
             String userId = payload.getSubject();
             System.out.println("User ID: " + userId);
 
-            // Get profile information from payload
             String email = payload.getEmail();
             boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-            String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
-            System.out.println(email);
+            System.out.println(emailVerified);
 
+            if(email.equals(user.getEmail()))
+            {
+                id.setUserId(user.getUserId());
+                id.setStatus(200);
+            }
+            System.out.println(email);
         }
 
         else {
+            id.setStatus(400);
             System.out.println("Invalid ID token.");
         }
-        return user;
+        return id;
     }
 
 }

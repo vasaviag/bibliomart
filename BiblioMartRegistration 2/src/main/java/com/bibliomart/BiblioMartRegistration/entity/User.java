@@ -15,14 +15,12 @@ public class User
     private String image;
     private String name;
     private String gender;
-    private String age;
+    private int age;
     private String address;
     private int fb;
     private int gmail;
     private String timestamps;
-    private String fbUserId;
     private String accessTokenFb; // (if logged in through fb)
-    private String gmailUserId;
     private String accessTokenGmail; // (if logged in through gmail)
 
 
@@ -50,7 +48,7 @@ public class User
         return gender;
     }
 
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 
@@ -62,7 +60,24 @@ public class User
         return fb;
     }
 
+    public void setFb(int fb) {
+        this.fb = fb;
+    }
+
+    public void setGmail(int gmail) {
+        this.gmail = gmail;
+    }
+
+    public void setAccessTokenFb(String accessTokenFb) {
+        this.accessTokenFb = accessTokenFb;
+    }
+
+    public void setAccessTokenGmail(String accessTokenGmail) {
+        this.accessTokenGmail = accessTokenGmail;
+    }
+
     public int getGmail() {
+
         return gmail;
     }
 
@@ -76,5 +91,9 @@ public class User
 
     public String getAccessTokenGmail() {
         return accessTokenGmail;
+    }
+
+    public void setTimestamps(String timestamps) {
+        this.timestamps = timestamps;
     }
 }
