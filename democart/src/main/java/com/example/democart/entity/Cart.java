@@ -10,35 +10,37 @@ import javax.persistence.Table;
 @IdClass(CartId.class)
 public class Cart {
     @Id
-    private int user_id;
-    private int product_id;
+    private int userId;
+    @Id
+    private int productId;
     private int quantity;
     private double cost;
 
     public Cart() {
     }
 
-    public Cart(int user_id, int product_id, int quantity, double cost) {
-        this.user_id = user_id;
-        this.product_id = product_id;
+    public Cart(int userId, int productId, int quantity, double cost) {
+        this.userId = userId;
+        this.productId = productId;
         this.quantity = quantity;
         this.cost = cost;
     }
 
-    public int getUser_id() {
-        return user_id;
+
+    public int getuserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setuserId(int userId) {
+        this.userId = userId;
     }
 
-    public int getProduct_id() {
-        return product_id;
+    public int getproductId() {
+        return productId;
     }
 
-    public void setProduct_id(int product_id) {
-        this.product_id = product_id;
+    public void setproductId(int productId) {
+        this.productId = productId;
     }
 
     public int getQuantity() {

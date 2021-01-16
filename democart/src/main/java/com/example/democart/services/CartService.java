@@ -10,10 +10,10 @@ public interface CartService {
      void deleteEntireCart(int id);
      Cart save(Cart cart);
      List<Cart>getCurrentCart();
-     void updateQuantityOfProduct();
-     void deleteProductFromCart();
-     Cart findById(int id);
-
-    Cart addItemsToCart(Cart cart);
+     Cart updateQuantityOfProduct(int userId,int productId);
+     List<Cart> findByUserId(int id);
+     void deleteByUserIdAndProductId(int userId, int productId);
+     Cart addItemsToCart(Cart cart);
+     Cart findByUserIdAndProductId(int userId, int productId);
 
 }

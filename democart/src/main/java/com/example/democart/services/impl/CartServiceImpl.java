@@ -1,10 +1,12 @@
 package com.example.democart.services.impl;
 
 import com.example.democart.entity.Cart;
+import com.example.democart.entity.CartId;
 import com.example.democart.repository.CartRepository;
 import com.example.democart.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,9 @@ public class CartServiceImpl implements CartService {
         return cartList;
     }
 
+
+    Cart cartData=new Cart();
+
     @Override
     public Cart save(Cart cart) {
 
@@ -32,10 +37,13 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteEntireCart(int user_id) {
-        cartRepository.deleteById(user_id);
-        System.out.println("Deleted");
-
+    public void deleteEntireCart(int userId) {
+        List<Cart> carts = findByUserId(userId);
+        for (Cart cart : carts)
+        {
+            cartRepository.deleteById(new CartId(cart.getuserId(), cart.getproductId()));
+        }
+        //System.out.println("Deleted");
     }
 
     @Override
@@ -46,34 +54,48 @@ public class CartServiceImpl implements CartService {
         return cartList;
     }
 
-    public void updateQuantityOfProduct()
-    {
-        // int val;
-        // get the data from database
-        // quantity + val;
-        // save
-        Cart cartData=new Cart();
-
-        int val=1;  //dummy variable for testing... value will come from front end ( + and - button)
-        int quantity=cartData.getQuantity();
-        quantity=quantity+val;
-        cartData.setQuantity(quantity);
-    }
 
     @Override
-    public void deleteProductFromCart() {
-
+    public List<Cart> findByUserId(int userId) {
+        Iterable<Cart> cartIterable = cartRepository.findByUserId(userId);
+        List<Cart> cartList=new ArrayList<>();
+        cartIterable.forEach(cartList::add);
+        return cartList;
     }
 
+    @Transactional(readOnly = false)
     @Override
-    public Cart findById(int user_id) {
-        return cartRepository.findById(user_id).get();
+    public void deleteByUserIdAndProductId(int userId, int productId) {
+        cartRepository.deleteByUserIdAndProductId(userId, productId);
+
     }
 
     @Override
     public Cart addItemsToCart(Cart cart)
     {
         return cartRepository.save(cart);
+    }
+
+    @Override
+    public Cart findByUserIdAndProductId(int userId, int productId) {
+        List<Cart> cart = cartRepository.findByUserIdAndProductId(userId,productId);
+        return cart.get(0);
+    }
+    @Override
+    public Cart updateQuantityOfProduct(int userId, int productId)
+    {
+        // int val;
+        // get the data from database
+        // quantity + val;
+        // save
+
+        int val=1;  //dummy variable for testing... value will come from front end ( + and - button)
+        List<Cart>list=cartRepository.findByUserIdAndProductId(userId,productId);
+        int q=list.get(0).getQuantity();
+        list.get(0).setQuantity(q+val);
+        cartRepository.save(list.get(0));
+        return list.get(0);
+
     }
 
 

@@ -22,9 +22,10 @@ public class CartController {
     }
 
     @GetMapping(value="/getcart/{userId}")
-    Cart findById(@PathVariable("userId") int userId)
+    List<Cart> findByUserId(@PathVariable("userId") int userId)
     {
-        return cartService.findById(userId);
+//        System.out.println(userId);
+        return cartService.findByUserId(userId);
     }
     //add item to cart
     @PostMapping("/cartadd")
@@ -32,23 +33,40 @@ public class CartController {
     {
         return this.cartService.addItemsToCart(cart);
     }
+    @DeleteMapping("delproduct/{userId}/{productId}")
+    public void deleteByUserIdAndProductId(@PathVariable("userId") int userId,@PathVariable (value="productId")int productId)
+    {
+        cartService.deleteByUserIdAndProductId(userId,productId);
+    }
 
-  @DeleteMapping("/cartdel/{product_id}")
-    public void deleteEntireCart(@PathVariable(value = "product_id") int product_id)
+  @DeleteMapping("/cartdel/{userId}")
+
+    public void deleteEntireCart(@PathVariable("userId") int userId)
   {
-       cartService.deleteEntireCart(product_id);
+
+       cartService.deleteEntireCart(userId);
   }
-  @PutMapping("/cartupd/{user_id}/{product_id}")
-    public void updateQuantityOfProduct()
-  {
-      cartService.updateQuantityOfProduct();
+  @PutMapping("/cartupd/{userId}/{productId}")
+    public Cart updateQuantityOfProduct(@PathVariable("userId") int userId, @PathVariable("productId") int productId) {
+
+        Cart cart = cartService.findByUserIdAndProductId(userId,productId);
+
+        return cartService.updateQuantityOfProduct(userId,productId);
+
   }
 
-  @PostMapping("cartdel/{userId}/{productId}")
-  public void deleteProductFromCart()
-  {
-        cartService.deleteProductFromCart();
-  }
+//    public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeId,
+//                                                   @Valid @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
+//        Employee employee = employeeRepository.findById(employeeId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+//
+//        employee.setEmailId(employeeDetails.getEmailId());
+//        employee.setLastName(employeeDetails.getLastName());
+//        employee.setFirstName(employeeDetails.getFirstName());
+//        final Employee updatedEmployee = employeeRepository.save(employee);
+//        return ResponseEntity.ok(updatedEmployee);
+//    }
+
 
 
 
