@@ -2,17 +2,17 @@ package com.bibliomart.BiblioMartMerchant.model;
 
 public class UpdateByMerchant {
 
-    int MerchantId;
-    int productId;
-    int quantity;
-    int cost;
+    private int MerchantId;
+    private String productName;
+    private int quantity;
+    private int cost;
 
-    public int getProductId() {
-        return productId;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public int getQuantity() {

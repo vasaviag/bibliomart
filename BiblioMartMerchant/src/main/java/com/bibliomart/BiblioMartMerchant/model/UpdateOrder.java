@@ -3,9 +3,9 @@ package com.bibliomart.BiblioMartMerchant.model;
 import java.util.List;
 
 public class UpdateOrder {
-    List<Integer> merchantId;
-    List<Integer> productId;
-    List<Integer> quantity;
+    private List<Integer> merchantId;
+    private List<String> productName;
+    private List<Integer> quantity;
 
     public List<Integer> getMerchantId() {
         return merchantId;
@@ -15,12 +15,12 @@ public class UpdateOrder {
         this.merchantId = merchantId;
     }
 
-    public List<Integer> getProductId() {
-        return productId;
+    public List<String> getProductName() {
+        return productName;
     }
 
-    public void setProductId(List<Integer> productId) {
-        this.productId = productId;
+    public void setProductName(List<String> productName) {
+        this.productName = productName;
     }
 
     public List<Integer> getQuantity() {

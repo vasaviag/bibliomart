@@ -1,16 +1,25 @@
 package com.bibliomart.BiblioMartMerchant.model;
 
 public class ProductDetails {
-    int productId;
-    int cost;
-    int quantity;
+    private String productName;
+    private String categoryName;
+    private int cost;
+    private int quantity;
 
-    public int getProductId() {
-        return productId;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public int getCost() {

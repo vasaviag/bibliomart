@@ -2,6 +2,7 @@ package com.bibliomart.BiblioMartMerchant.services.impl;
 
 import com.bibliomart.BiblioMartMerchant.model.*;
 import com.bibliomart.BiblioMartMerchant.repository.MerchantRepository;
+import com.bibliomart.BiblioMartMerchant.repository.ProductRepository;
 import com.bibliomart.BiblioMartMerchant.services.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,13 @@ public class MerchantServiceImpl implements MerchantService {
     @Autowired
     MerchantRepository merchantRepository;
 
+    @Autowired
+    ProductRepository productRepository;
+
     @Override
     public Id register(Merchant mer){
         mer.setMerchantId((int)merchantRepository.count()+1);
+        mer.setGetMerchantRating(0);
         Id id = new Id();
         try {
             Merchant merchantdata = merchantRepository.insert(mer);
@@ -55,13 +60,24 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public Merchant addProduct(Merchant mer){
             int merId = mer.getMerchantId();
-            List<Merchant> merdata = merchantRepository.findByMerchantId(merId);
-            Merchant merchant = merdata.get(0);
+            String addProductName = mer.getProductDetails().get(0).getProductName();
+            Products products;
+            products = productRepository.findByproductName(addProductName);
+            int addproductId;
+            if(products == null){
+                Products products1 = new Products();
+                products1.setProductId((int)productRepository.count()+1);
+                products1.setProductName(addProductName);
+                productRepository.insert(products1);
+            }
+
+            List<Merchant> merData = merchantRepository.findByMerchantId(merId);
+            Merchant merchant = merData.get(0);
             try {
                 int flag = 0;
                 List<ProductDetails> productDetailsList = merchant.getProductDetails();
                 for(int i=0;i<productDetailsList.size();i++){
-                    if(productDetailsList.get(i).getProductId() == mer.getProductDetails().get(0).getProductId()){
+                    if(productDetailsList.get(i).getProductName().equals(addProductName)){
                         flag = 1;
                     }
                 }
@@ -80,7 +96,11 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public List<ProductDetails> viewProduct(int merId){
         List<Merchant> merdata = merchantRepository.findByMerchantId(merId);
-        return merdata.get(0).getProductDetails();
+        try {
+            return merdata.get(0).getProductDetails();
+        }catch (Exception exp){
+            return null;
+        }
     }
 
     @Override
@@ -91,7 +111,7 @@ public class MerchantServiceImpl implements MerchantService {
             double rating = merchant.getGetMerchantRating();
             List<ProductDetails> productDetails = merchant.getProductDetails();
             for(ProductDetails productDetail:productDetails){
-                if(productDetail.getProductId() == updateOrderdetails.getProductId().get(i)){
+                if(productDetail.getProductName().equals(updateOrderdetails.getProductName().get(i))){
                     productDetail.setQuantity(productDetail.getQuantity()-updateOrderdetails.getQuantity().get(i));
                     if(rating < 3) rating = rating + (0.01*updateOrderdetails.getQuantity().get(i));
                     else if(rating < 4) rating = rating + (0.005*updateOrderdetails.getQuantity().get(i));
@@ -111,7 +131,7 @@ public class MerchantServiceImpl implements MerchantService {
         Merchant merchant = merdata.get(0);
         List<ProductDetails> productDetails = merchant.getProductDetails();
         for(ProductDetails productDetail:productDetails){
-            if(productDetail.getProductId() == merdata.get(0).getProductDetails().get(0).getProductId()){
+            if(productDetail.getProductName().equals(updateMerchantProducts.getProductName())){
                 productDetail.setQuantity(updateMerchantProducts.getQuantity());
                 productDetail.setCost(updateMerchantProducts.getCost());
                 break;
