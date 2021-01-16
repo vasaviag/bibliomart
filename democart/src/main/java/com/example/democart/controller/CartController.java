@@ -15,10 +15,10 @@ public class CartController {
     CartService cartService;
 
     //get current cart
-    @GetMapping("/cartget/{userId}")
-    public List<Cart> getCurrentCart(@PathVariable("userId") int userId)
+    @GetMapping("/cartget")
+    public List<Cart> getCurrentCart()
     {
-       return cartService.getCurrentCart(userId);
+       return cartService.getCurrentCart();
     }
 
     @GetMapping(value="/getcart/{userId}")

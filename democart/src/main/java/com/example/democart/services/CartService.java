@@ -9,7 +9,7 @@ public interface CartService {
      List<Cart> findAll();
      void deleteEntireCart(int id);
      Cart save(Cart cart);
-     List<Cart>getCurrentCart(int userId);
+     List<Cart>getCurrentCart();
      void updateQuantityOfProduct();
      void deleteProductFromCart();
      Cart findById(int id);
