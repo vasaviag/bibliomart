@@ -3,7 +3,7 @@ package com.bibliomart.BiblioMartMerchant.model;
 public class ProductDetails {
     int productId;
     int cost;
-    int quntity;
+    int quantity;
 
     public int getProductId() {
         return productId;
@@ -21,11 +21,11 @@ public class ProductDetails {
         this.cost = cost;
     }
 
-    public int getQuntity() {
-        return quntity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuntity(int quntity) {
-        this.quntity = quntity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

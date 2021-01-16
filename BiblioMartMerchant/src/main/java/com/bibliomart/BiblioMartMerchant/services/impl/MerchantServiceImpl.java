@@ -58,9 +58,17 @@ public class MerchantServiceImpl implements MerchantService {
             List<Merchant> merdata = merchantRepository.findByMerchantId(merId);
             Merchant merchant = merdata.get(0);
             try {
+                int flag = 0;
                 List<ProductDetails> productDetailsList = merchant.getProductDetails();
-                productDetailsList.add(mer.getProductDetails().get(0));
-                merchant.setProductDetails(productDetailsList);
+                for(int i=0;i<productDetailsList.size();i++){
+                    if(productDetailsList.get(i).getProductId() == mer.getProductDetails().get(0).getProductId()){
+                        flag = 1;
+                    }
+                }
+                if(flag == 0) {
+                    productDetailsList.add(mer.getProductDetails().get(0));
+                    merchant.setProductDetails(productDetailsList);
+                }
             }catch (Exception exp) {
                 merchant.setProductDetails(mer.getProductDetails());
             }
@@ -77,16 +85,18 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public void updateAfterOrder(UpdateOrder updateOrderdetails){
-        System.out.println(updateOrderdetails);
         for(int i=0;i<updateOrderdetails.getMerchantId().size();i++){
             List<Merchant> merdata =  merchantRepository.findByMerchantId(updateOrderdetails.getMerchantId().get(i));
             Merchant merchant = merdata.get(0);
-            System.out.println(merchant.getMerchantId());
-            System.out.println(updateOrderdetails.getMerchantId().get(i));
+            double rating = merchant.getGetMerchantRating();
             List<ProductDetails> productDetails = merchant.getProductDetails();
             for(ProductDetails productDetail:productDetails){
                 if(productDetail.getProductId() == updateOrderdetails.getProductId().get(i)){
-                    productDetail.setQuntity(productDetail.getQuntity()-updateOrderdetails.getQuantity().get(i));
+                    productDetail.setQuantity(productDetail.getQuantity()-updateOrderdetails.getQuantity().get(i));
+                    if(rating < 3) rating = rating + (0.01*updateOrderdetails.getQuantity().get(i));
+                    else if(rating < 4) rating = rating + (0.005*updateOrderdetails.getQuantity().get(i));
+                    else if(rating < 5) rating = rating + (0.001*updateOrderdetails.getQuantity().get(i));
+                    merchant.setGetMerchantRating(rating);
                     break;
                 }
             }
@@ -102,7 +112,7 @@ public class MerchantServiceImpl implements MerchantService {
         List<ProductDetails> productDetails = merchant.getProductDetails();
         for(ProductDetails productDetail:productDetails){
             if(productDetail.getProductId() == merdata.get(0).getProductDetails().get(0).getProductId()){
-                productDetail.setQuntity(updateMerchantProducts.getQuantity());
+                productDetail.setQuantity(updateMerchantProducts.getQuantity());
                 productDetail.setCost(updateMerchantProducts.getCost());
                 break;
             }

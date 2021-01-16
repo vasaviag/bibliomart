@@ -9,7 +9,7 @@ import java.util.List;
 public class Merchant {
     private int merchantId;
     private String merchantName;
-    private int getMerchantRating;
+    private double getMerchantRating;
     @Id
     private String email;
     private String password;
@@ -31,11 +31,11 @@ public class Merchant {
         this.merchantName = merchantName;
     }
 
-    public int getGetMerchantRating() {
+    public double getGetMerchantRating() {
         return getMerchantRating;
     }
 
-    public void setGetMerchantRating(int getMerchantRating) {
+    public void setGetMerchantRating(double getMerchantRating) {
         this.getMerchantRating = getMerchantRating;
     }
 
