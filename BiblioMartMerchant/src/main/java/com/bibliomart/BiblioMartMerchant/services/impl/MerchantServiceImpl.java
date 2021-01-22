@@ -4,6 +4,7 @@ import com.bibliomart.BiblioMartMerchant.model.*;
 import com.bibliomart.BiblioMartMerchant.repository.MerchantRepository;
 import com.bibliomart.BiblioMartMerchant.repository.ProductRepository;
 import com.bibliomart.BiblioMartMerchant.services.MerchantService;
+//import com.bibliomart.BiblioMartMerchant.services.kafka.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,6 +106,10 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public void updateAfterOrder(UpdateOrder updateOrderdetails){
+
+//        Producer producer = new Producer();
+//        System.out.println(updateOrderdetails);
+
         for(int i=0;i<updateOrderdetails.getMerchantId().size();i++){
             List<Merchant> merdata =  merchantRepository.findByMerchantId(updateOrderdetails.getMerchantId().get(i));
             Merchant merchant = merdata.get(0);
@@ -122,11 +127,13 @@ public class MerchantServiceImpl implements MerchantService {
             }
             merchant.setProductDetails(productDetails);
             merchantRepository.save(merchant);
+//            producer.sendUpdateAfterOrderObject(updateOrderdetails);
         }
     }
 
     @Override
     public void updateByMerchant(UpdateByMerchant updateMerchantProducts){
+//        Producer producer = new Producer();
         List<Merchant> merdata =  merchantRepository.findByMerchantId(updateMerchantProducts.getMerchantId());
         Merchant merchant = merdata.get(0);
         List<ProductDetails> productDetails = merchant.getProductDetails();
@@ -139,5 +146,6 @@ public class MerchantServiceImpl implements MerchantService {
         }
         merchant.setProductDetails(productDetails);
         merchantRepository.save(merchant);
+//        producer.sendUpdateAfterOrderObject(mer);
     }
 }
