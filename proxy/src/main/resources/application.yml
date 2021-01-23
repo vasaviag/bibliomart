@@ -1,0 +1,36 @@
+server:
+  port: 8089
+
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: registration
+        uri: http://localhost:8082/
+        predicates:
+          - Path=/registration/**
+
+      - id: merchant
+        uri: http://10.177.1.69:8081/
+        predicates:
+          - Path=/merchant/**
+
+      - id: product
+        uri: http://10.177.1.69:8085/
+        predicates:
+          - Path=/myproduct/**
+
+      - id: order
+        uri: http://10.177.1.137:8082/
+        predicates:
+          - Path=/order/**
+
+      - id: search
+        uri: http://10.177.1.69:8086/
+        predicates:
+          - Path=/searchproduct/**
+
+      - id: cart
+        uri: http://10.177.1.137:8081/
+        predicates:
+          - Path=/cart/**
